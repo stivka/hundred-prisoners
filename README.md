@@ -1,4 +1,4 @@
-Procedural in Python is complete under probability.py
+Procedural approach in Python is complete under probability.py
 
 
 Also to try:
