@@ -31,6 +31,8 @@ def play(playersQueue, numbersInsideBoxes):
 
         numberOfBoxesOpened = 0
         indexOfBoxToOpen = playerNumber
+        indexOfBoxToOpen = (playerNumber + 1) % 100
+
 
         # in the inner loop, the player opens boxes until they find their number or run out of tries
         while numberOfBoxesOpened <= 50:
@@ -42,12 +44,12 @@ def play(playersQueue, numbersInsideBoxes):
                 # print('Player ' + str(playerNumber) + ' found their number after opening ' + str(numberOfBoxesOpened) + ' boxes!')
                 break
             elif numberOfBoxesOpened == 50:
-                print('Player ' + str(playerNumber) + ' did not find their number while opening ' + str(numberOfBoxesOpened) + ' boxes. All players shall die!')
+                # print('Player ' + str(playerNumber) + ' did not find their number while opening ' + str(numberOfBoxesOpened) + ' boxes. All players shall die!')
                 return False
             else:
-                indexOfBoxToOpen = numberInBox
+                indexOfBoxToOpen = (numberInBox + 1) % 100
     
-    print('The last of 100 players managed to find their number! All their lives will be spared!') 
+    # print('The last of 100 players managed to find their number! All their lives will be spared!') 
     return True
 
 def playNumberOfTimes(number):
@@ -81,4 +83,4 @@ def printInGrid(numbers):
             print(numbers[i], end="  ")
     print('\n\n')
 
-playNumberOfTimes(100)
+playNumberOfTimes(1000000)
