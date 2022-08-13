@@ -1,9 +1,9 @@
 import random
+import os
 import sys
 
-logLevel = 'regular'
 if len(sys.argv) > 2:
-    logLevel = sys.argv[2]
+    os.environ['LOG_LEVEL'] = sys.argv[2]
 
 # Create set 0-99
 zeroUpTillHundred = list(range(100))
@@ -44,16 +44,16 @@ def play(playersQueue, numbersInsideBoxes):
             numberInBox = numbersInsideBoxes[indexOfBoxToOpen]
 
             if numberInBox == playerNumber:
-                if logLevel == 'verbose':
+                if  os.getenv('LOG_LEVEL') == 'verbose':
                     print('Player ' + str(playerNumber) + ' found their number after opening ' + str(numberOfBoxesOpened) + ' boxes!')
                 break
             elif numberOfBoxesOpened == 50:
-                if logLevel == 'verbose':
+                if os.getenv('LOG_LEVEL') == 'verbose':
                     print('Player ' + str(playerNumber) + ' did not find their number while opening ' + str(numberOfBoxesOpened) + ' boxes. All players shall die!')
                 return False
             else:
                 indexOfBoxToOpen = numberInBox
-    if logLevel == 'verbose':
+    if os.getenv('LOG_LEVEL') == 'verbose':
         print('The last of 100 players managed to find their number! All their lives will be spared!') 
     return True
 
