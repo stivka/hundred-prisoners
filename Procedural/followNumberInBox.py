@@ -2,8 +2,14 @@ import random
 import os
 import sys
 
+verboseLogging = os.getenv('LOG_LEVEL') =='verbose'
+
+n = int(sys.argv[1])
+# n = 5
+
+increment = 0
 if len(sys.argv) > 2:
-    os.environ['LOG_LEVEL'] = sys.argv[2]
+    increment = int(sys.argv[2])
 
 # Create set 0-99
 zeroUpTillHundred = list(range(100))
@@ -36,6 +42,7 @@ def play(playersQueue, numbersInsideBoxes):
 
         numberOfBoxesOpened = 0
         indexOfBoxToOpen = playerNumber
+        indexOfBoxToOpen = (playerNumber + increment) % 100
 
         # in the inner loop, the player opens boxes until they find their number or run out of tries
         while numberOfBoxesOpened <= 50:
@@ -44,40 +51,54 @@ def play(playersQueue, numbersInsideBoxes):
             numberInBox = numbersInsideBoxes[indexOfBoxToOpen]
 
             if numberInBox == playerNumber:
-                if  os.getenv('LOG_LEVEL') == 'verbose':
+                if (verboseLogging):
                     print('Player ' + str(playerNumber) + ' found their number after opening ' + str(numberOfBoxesOpened) + ' boxes!')
                 break
             elif numberOfBoxesOpened == 50:
-                if os.getenv('LOG_LEVEL') == 'verbose':
+                if (verboseLogging):
                     print('Player ' + str(playerNumber) + ' did not find their number while opening ' + str(numberOfBoxesOpened) + ' boxes. All players shall die!')
                 return False
             else:
-                indexOfBoxToOpen = numberInBox
-    if os.getenv('LOG_LEVEL') == 'verbose':
+                indexOfBoxToOpen = (numberInBox + increment) % 100
+    if (verboseLogging):
         print('The last of 100 players managed to find their number! All their lives will be spared!') 
     return True
 
-def playNumberOfTimes(number):
+def init(numberOfTimes):
 
     i = 0
-    numberOfWins = 0
-    numberOfLosses = 0
-    while i < number:
+    numberOfWinsWithOriginalStrategy = 0
+    numberOfLossesWithOriginalStrategy = 0
+    numberOfWinsWithIncrementStrategy = 0
+    numberOfLossesWithIncrementStrategy = 0
+
+    while i < n:
         i = i + 1
 
         zeroUpTillHundred = list(range(100))
         numbersInsideBoxes = random.sample(zeroUpTillHundred, len(zeroUpTillHundred))
         playersQueue = zeroUpTillHundred
-        
-        result = play(playersQueue, numbersInsideBoxes)
-        if  result == False:
-            numberOfLosses = numberOfLosses + 1
-        elif result == True:
-            numberOfWins = numberOfWins + 1
-    print('Number of wins = ' + str(numberOfWins) + ', number of losses = ' + str(numberOfLosses))
-    print('Win probability = ' + str(round(numberOfWins / (numberOfWins + numberOfLosses) * 100, 2))+ '%')
-        
 
+        # Plays two games in succession with the same players and boxes but different strategy
+        if increment != 0:
+            strategyWithIncrementResult = play(playersQueue, numbersInsideBoxes)
+            if  strategyWithIncrementResult == False:
+                numberOfLossesWithIncrementStrategy = numberOfLossesWithIncrementStrategy + 1
+            elif strategyWithIncrementResult == True:
+                numberOfWinsWithIncrementStrategy = numberOfWinsWithIncrementStrategy + 1
+        
+        originalStrategyResult = play(playersQueue, numbersInsideBoxes)
+        if  originalStrategyResult == False:
+            numberOfLossesWithOriginalStrategy = numberOfLossesWithOriginalStrategy + 1
+        elif originalStrategyResult == True:
+            numberOfWinsWithOriginalStrategy = numberOfWinsWithOriginalStrategy + 1
+             
+    print('Number of wins = ' + str(numberOfWinsWithOriginalStrategy) + ', number of losses = ' + str(numberOfLossesWithOriginalStrategy))
+    print('Win probability with original strategy = ' + str(round(numberOfWinsWithOriginalStrategy / (numberOfWinsWithOriginalStrategy + numberOfLossesWithOriginalStrategy) * 100, 2))+ '%')   
+    if increment != 0:
+        print('Number of wins = ' + str(numberOfWinsWithIncrementStrategy) + ', number of losses = ' + str(numberOfLossesWithIncrementStrategy))
+        print('Win probability with increment strategy = ' + str(round(numberOfWinsWithIncrementStrategy / (numberOfWinsWithIncrementStrategy + numberOfLossesWithIncrementStrategy) * 100, 2))+ '%')
+        
 def printInGrid(numbers):
     for i in range(0, 100):
         if (i % 10 == 0 and i > 9):
@@ -88,4 +109,4 @@ def printInGrid(numbers):
             print(numbers[i], end="  ")
     print('\n\n') 
 
-playNumberOfTimes(int(sys.argv[1]))
+init(n)
