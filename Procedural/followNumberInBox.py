@@ -1,4 +1,9 @@
 import random
+import os
+import sys
+
+if len(sys.argv) > 2:
+    os.environ['LOG_LEVEL'] = sys.argv[2]
 
 # Create set 0-99
 zeroUpTillHundred = list(range(100))
@@ -39,15 +44,17 @@ def play(playersQueue, numbersInsideBoxes):
             numberInBox = numbersInsideBoxes[indexOfBoxToOpen]
 
             if numberInBox == playerNumber:
-                # print('Player ' + str(playerNumber) + ' found their number after opening ' + str(numberOfBoxesOpened) + ' boxes!')
+                if  os.getenv('LOG_LEVEL') == 'verbose':
+                    print('Player ' + str(playerNumber) + ' found their number after opening ' + str(numberOfBoxesOpened) + ' boxes!')
                 break
             elif numberOfBoxesOpened == 50:
-                #print('Player ' + str(playerNumber) + ' did not find their number while opening ' + str(numberOfBoxesOpened) + ' boxes. All players shall die!')
+                if os.getenv('LOG_LEVEL') == 'verbose':
+                    print('Player ' + str(playerNumber) + ' did not find their number while opening ' + str(numberOfBoxesOpened) + ' boxes. All players shall die!')
                 return False
             else:
                 indexOfBoxToOpen = numberInBox
-    
-    #print('The last of 100 players managed to find their number! All their lives will be spared!') 
+    if os.getenv('LOG_LEVEL') == 'verbose':
+        print('The last of 100 players managed to find their number! All their lives will be spared!') 
     return True
 
 def playNumberOfTimes(number):
@@ -68,6 +75,7 @@ def playNumberOfTimes(number):
         elif result == True:
             numberOfWins = numberOfWins + 1
     print('Number of wins = ' + str(numberOfWins) + ', number of losses = ' + str(numberOfLosses))
+    print('Win probability = ' + str(round(numberOfWins / (numberOfWins + numberOfLosses) * 100, 2))+ '%')
         
 
 def printInGrid(numbers):
@@ -78,6 +86,6 @@ def printInGrid(numbers):
             print(str(numbers[i]) + ' ', end="  ")
         else :
             print(numbers[i], end="  ")
-    print('\n\n')
+    print('\n\n') 
 
-playNumberOfTimes(100000)
+playNumberOfTimes(int(sys.argv[1]))
